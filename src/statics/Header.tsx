@@ -6,9 +6,9 @@ const Header = ({ setIsMenuOpen, isMenuOpen }: { setIsMenuOpen: React.Dispatch<R
     const MobileMenu = () => (
         <div className="fixed inset-0 bg-white z-50 flex flex-col">
             <div className="bg-black text-white text-xs text-center py-3 px-4 relative">
-                <span>
+                {/* <span>
                     Sign up and get 20% off to your first order. <a href="#" className="underline font-semibold">Sign Up Now</a>
-                </span>
+                </span> */}
             </div>
             <div className="p-6 flex flex-col flex-grow">
                 <button onClick={() => setIsMenuOpen(false)} className="self-start mb-8">
@@ -34,9 +34,9 @@ const Header = ({ setIsMenuOpen, isMenuOpen }: { setIsMenuOpen: React.Dispatch<R
         <>
             {isMenuOpen && <MobileMenu />}
             <header className="bg-white relative">
-                <div className="bg-[#F8F3EF] text-center py-2 text-xs text-gray-800">
+                {/* <div className="bg-[#F8F3EF] text-center py-2 text-xs text-gray-800">
                     Sign up and get 20% off to your first order. <a href="#" className="underline font-semibold">Sign Up Now</a>
-                </div>
+                </div> */}
                 <div className="container mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="flex items-center gap-4 md:gap-0">
                         <button className="md:hidden" onClick={() => setIsMenuOpen(true)}>
