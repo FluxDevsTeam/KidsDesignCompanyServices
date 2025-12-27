@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import firstServiceBaby from "../assets/firstServiceBaby.png";
 import serviceHeroImage from "../assets/serviceHeroImage.png";
 // import Header from "./Header";
@@ -49,15 +48,6 @@ const ChevronRight = () => (
 );
 
 const Services = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-  }, [isMenuOpen]);
 
   const services = [
     {
