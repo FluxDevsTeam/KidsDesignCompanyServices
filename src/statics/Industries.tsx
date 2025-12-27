@@ -1,22 +1,4 @@
-import React, { useState } from 'react';
-import { X, ChevronRight } from 'lucide-react';
-
-// --- Sub-Components ---
-
-const TopBanner = () => {
-  const [isVisible, setIsVisible] = useState(true);
-  if (!isVisible) return null;
-  return (
-    <div className="bg-black text-white text-xs sm:text-sm py-3 px-4 flex justify-between items-center relative">
-      <div className="w-full text-center font-medium">
-        Sign up and get 20% off to your first order. <a href="#" className="underline hover:text-gray-300">Sign Up Now</a>
-      </div>
-      <button onClick={() => setIsVisible(false)} className="absolute right-4 text-white">
-        <X size={16} />
-      </button>
-    </div>
-  );
-};
+import { ChevronRight } from 'lucide-react';
 
 
 interface ProjectCardProps {
