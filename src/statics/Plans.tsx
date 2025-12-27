@@ -1,16 +1,13 @@
 import { Check, MessageCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { fetchPackages, type Package } from '../api/packages';
 
 interface CheckItemProps {
   text: string;
 }
 
 interface PricingCardProps {
-  title: string;
-  subtitle: string;
-  features: string[];
-  buttonText: string;
-  isPremium: boolean;
-  buttonColor: string;
+  package: Package;
   isPopular: boolean;
 }
 
@@ -35,18 +32,22 @@ const CheckItem = ({ text }: CheckItemProps) => (
   </li>
 );
 
-const PricingCard = ({ title, subtitle, features, buttonText, isPremium, buttonColor, isPopular }: PricingCardProps) => {
+const PricingCard = ({ package: pkg, isPopular }: PricingCardProps) => {
+  const features = pkg.includes ? pkg.includes.split('\n').filter(f => f.trim()) : [];
+  const isPremium = pkg.is_featured;
+  const buttonColor = isPremium ? 'orange' : 'blue';
+
   return (
     <div className={`rounded-2xl p-8 flex flex-col h-full relative ${isPremium ? 'bg-[#FFFBF3] border border-[#FDB043]/30 shadow-sm' : 'bg-white border border-gray-200'}`}>
-      
+
       {isPopular && (
         <span className="absolute top-8 right-8 bg-[#FDB043] text-white text-xs font-bold px-3 py-1 rounded-full">
           Popular
         </span>
       )}
 
-      <h3 className="text-2xl font-bold text-gray-900 mb-4">{title}</h3>
-      <p className="text-gray-600 text-sm mb-8 min-h-[40px]">{subtitle}</p>
+      <h3 className="text-2xl font-bold text-gray-900 mb-4">{pkg.name}</h3>
+      <p className="text-gray-600 text-sm mb-8 min-h-[40px]">{pkg.short_description || pkg.description}</p>
 
       <div className="mb-6">
         <h4 className="font-bold text-sm text-gray-900 mb-4">Features</h4>
@@ -58,12 +59,18 @@ const PricingCard = ({ title, subtitle, features, buttonText, isPremium, buttonC
       </div>
 
       <div className="mt-auto pt-6">
-        <button 
+        <div className="text-2xl font-bold text-gray-900 mb-4">
+          ₦{pkg.price}
+          {pkg.undiscounted_price && (
+            <span className="text-sm text-gray-500 line-through ml-2">₦{pkg.undiscounted_price}</span>
+          )}
+        </div>
+        <button
           className={`w-full py-3.5 rounded-full font-semibold text-white transition-transform hover:scale-[1.02] ${
             buttonColor === 'orange' ? 'bg-[#FDB043] hover:bg-[#e59b32]' : 'bg-[#087CA7] hover:bg-[#066a8f]'
           }`}
         >
-          {buttonText}
+          Book This Plan
         </button>
       </div>
     </div>
@@ -178,64 +185,52 @@ const StillDeciding = () => (
 // --- Main Component ---
 
 export default function Plans() {
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadPackages = async () => {
+      try {
+        const data = await fetchPackages({ page_size: 10 });
+        setPackages(data.results);
+      } catch (error) {
+        console.error('Failed to load packages:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadPackages();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="font-sans min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#007CA6] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading packages...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="font-sans min-h-screen bg-white">
       <PricingHeader />
 
       {/* Pricing Cards Section */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-        <PricingCard
-          title="Basic"
-          subtitle="Parents Who Want A Quick, Affordable Refresh."
-          buttonText="Book This Plan"
-          buttonColor="blue"
-          isPremium={false}
-          isPopular={false}
-          features={[
-            "Space Consultation (Online Or In-Person)",
-            "Color + Decor Recommendation",
-            "Lightweight Furniture Swap/Upgrade",
-            "Wall Art & Organization Ideas",
-            "Basic Styling Setup"
-          ]}
-        />
-        <PricingCard
-          title="Premium"
-          subtitle="Hospitals, Daycare Centers, Or Large Educational Facilities."
-          buttonText="Book This Plan"
-          buttonColor="orange"
-          isPremium={true}
-          isPopular={true}
-          features={[
-            "Space Planning & Furniture Layout",
-            "Color Palette + Theme Design",
-            "3D Visualization Of Space, Wall Decors.",
-            "Wall Design & Lighting Setup",
-            "Final Room Styling And Delivery",
-            "Everything In Basic Plan"
-          ]}
-        />
-        <PricingCard
-          title="Custom Quote"
-          subtitle="Unique, Large-Scale, Or Partnership Projects."
-          buttonText="Request A Custom Quote"
-          buttonColor="blue"
-          isPremium={false}
-          isPopular={false}
-          features={[
-            "Free Discovery Call",
-            "Custom Proposal & Timeline",
-            "Custom Furniture Fabrication",
-            "Define Your Scope, Goals, And Timelines.",
-            "3D Visualization Of Space.",
-            "Wall Decors."
-          ]}
-        />
+        {packages.slice(0, 3).map((pkg, index) => (
+          <PricingCard
+            key={pkg.id}
+            package={pkg}
+            isPopular={index === 1} // Make the second one popular
+          />
+        ))}
       </div>
 
       <PlansOverview />
       <StillDeciding />
-    
+
     </div>
   );
 }
