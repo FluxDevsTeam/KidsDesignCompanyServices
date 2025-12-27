@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import blogHero from '../assets/blogging.png'
+import blogHero from '../assets/blogging.png';
+import { fetchBlogPosts, type BlogPost } from '../api/blog';
 
 
 const HeroSection = () => (
@@ -40,54 +41,30 @@ const HeroSection = () => (
   </div>
 );
 
-const MainArticle = () => (
+const MainArticle = ({ post }: { post: BlogPost }) => (
   <section className="max-w-5xl mx-auto px-6 md:px-12 py-12 md:py-20">
     {/* Header Block */}
     <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-center mb-12">
         <div className="w-full md:w-1/2">
-            <img 
-                src="https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=1000&auto=format&fit=crop" 
-                alt="Consultant" 
+            <img
+                src={post.featured_image || "https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=1000&auto=format&fit=crop"}
+                alt={post.title}
                 className="rounded-2xl shadow-lg w-full h-64 md:h-72 object-cover"
             />
         </div>
         <div className="w-full md:w-1/2">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-                Bringing Creativity and Colour to Life.
+                {post.title}
             </h2>
             <div className="text-gray-500 text-sm md:text-base font-medium">
-                Posted &nbsp;•&nbsp; April 30, 2025
+                Posted &nbsp;•&nbsp; {new Date(post.publish_date || post.created_at).toLocaleDateString()}
             </div>
         </div>
     </div>
 
     {/* Content Block */}
     <div className="prose max-w-none text-gray-600 leading-relaxed text-sm md:text-base">
-        <p className="mb-6">
-            A behind-the-scenes look at how we transformed Springdale School's classrooms into vibrant, functional spaces for learning.
-        </p>
-        <p className="mb-6">
-            When we first walked into Springdale Primary School, the classrooms looked like most we'd seen, plain white walls, dull desks, and fluorescent lighting. The teachers were passionate, the children were curious, but the space itself wasn't helping either of them thrive.
-            That's when the school reached out to us at Kids Design Company to help reimagine their learning spaces. Their request was simple but powerful:
-            <br/>
-            <span className="italic font-medium text-gray-800">“We want a classroom that makes learning feel exciting again.”</span>
-        </p>
-
-        <h3 className="text-2xl font-bold text-gray-900 mt-10 mb-4">Designing for Emotion, Not Just Aesthetics</h3>
-        
-        <p className="mb-4">
-            We believe that children's spaces should feel as alive as they are — warm, imaginative, and safe. So we built the entire project around the idea of color psychology, using colors to influence mood, focus, and creativity.
-        </p>
-        <p className="mb-4">Each classroom became its own mood zone inspired by the rainbow:</p>
-        <ul className="list-disc pl-5 space-y-2 mb-6">
-            <li><span className="font-medium text-gray-800">Red Room</span> – energy and confidence</li>
-            <li><span className="font-medium text-gray-800">Yellow Room</span> – curiosity and creativity</li>
-            <li><span className="font-medium text-gray-800">Green Room</span> – calm and connection</li>
-            <li><span className="font-medium text-gray-800">Blue Room</span> – focus and trust</li>
-        </ul>
-        <p>
-            We carefully selected materials that were non-toxic, easy to clean, and child-safe. Every corner, from the reading nooks to the art shelves, was designed to encourage movement, play, and collaboration.
-        </p>
+        <div dangerouslySetInnerHTML={{ __html: post.content }} />
     </div>
   </section>
 );
@@ -114,37 +91,13 @@ const BlogCard = ({ image, tag, date, title, excerpt }: BlogCardProps) => (
     </div>
 );
 
-const SimilarBlogs = () => {
-    const blogs = [
-        {
-            image: "https://images.unsplash.com/photo-1571210862729-78a52d3779a2?q=80&w=1000&auto=format&fit=crop",
-            tag: "Education and Schools",
-            date: "April 11, 2025",
-            title: "Designing for Curious Minds",
-            excerpt: "Actionable insights on how businesses can use technology to grow, scale, and stay competitive."
-        },
-        {
-            image: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=1000&auto=format&fit=crop",
-            tag: "Hospitals and ChildCare",
-            date: "April 11, 2025",
-            title: "Playful Environments in Hospitals",
-            excerpt: "Actionable insights on how businesses can use technology to grow, scale, and stay competitive."
-        },
-        {
-            image: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?q=80&w=1000&auto=format&fit=crop",
-            tag: "Museums, Events & Nonprofits",
-            date: "April 11, 2025",
-            title: "How to Build a Future-Proof Digital Strategy",
-            excerpt: "Actionable insights on how businesses can use technology to grow, scale, and stay competitive."
-        }
-    ];
-
+const SimilarBlogs = ({ posts }: { posts: BlogPost[] }) => {
     return (
         <section className="max-w-6xl mx-auto px-6 md:px-12 pb-20">
             <div className="mb-8">
                  <h2 className="text-3xl font-bold text-gray-800">Similar Blogs</h2>
             </div>
-            
+
             <div className="relative">
                 {/* Navigation Arrows (Desktop) */}
                 <button className="hidden lg:flex absolute -left-16 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-md items-center justify-center border border-gray-100 text-[#007CA6] hover:bg-gray-50 z-10">
@@ -155,8 +108,15 @@ const SimilarBlogs = () => {
                 </button>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {blogs.map((blog, index) => (
-                        <BlogCard key={index} {...blog} />
+                    {posts.map((post, _index) => (
+                        <BlogCard
+                            key={post.id}
+                            image={post.featured_image || "https://images.unsplash.com/photo-1571210862729-78a52d3779a2?q=80&w=1000&auto=format&fit=crop"}
+                            tag={post.category?.name || "General"}
+                            date={new Date(post.publish_date || post.created_at).toLocaleDateString()}
+                            title={post.title}
+                            excerpt={post.excerpt || post.content.substring(0, 100) + "..."}
+                        />
                     ))}
                 </div>
             </div>
@@ -188,11 +148,42 @@ const CTASection = () => (
 // --- Main Component ---
 
 export default function Blogs() {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadPosts = async () => {
+      try {
+        const data = await fetchBlogPosts({ page_size: 10 });
+        setPosts(data.results);
+      } catch (error) {
+        console.error('Failed to load blog posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadPosts();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="font-sans min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#007CA6] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading blog posts...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const mainPost = posts[0];
+  const similarPosts = posts.slice(1, 4);
+
   return (
     <div className="font-sans min-h-screen bg-white">
       <HeroSection />
-      <MainArticle />
-      <SimilarBlogs />
+      {mainPost && <MainArticle post={mainPost} />}
+      <SimilarBlogs posts={similarPosts} />
       <CTASection />
     </div>
   );
