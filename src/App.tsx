@@ -8,6 +8,7 @@ import Consultation from "./statics/Consultation";
 import Plans from "./statics/Plans";
 import Blogs from "./statics/Blogs";
 import Newsletter from "./statics/Newsletter";
+import PackageDetail from "./statics/PackageDetail";
 
 
 const App: React.FC = () => {
@@ -28,6 +29,7 @@ const AppContent: React.FC = () => {
         <Route path="/industries" element={<Industries/>}/>
         <Route path="/consultation" element={<Consultation/>}/>
         <Route path="/plans" element={<Plans/>}/>
+        <Route path="/package/:slug" element={<PackageDetail/>}/>
         <Route path="/blogs" element={<Blogs/>}/>
         <Route path="/newsletter" element={<Newsletter/>}/>
 
