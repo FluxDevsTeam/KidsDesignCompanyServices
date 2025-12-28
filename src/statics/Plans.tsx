@@ -1,7 +1,7 @@
-import { Check, MessageCircle } from 'lucide-react';
+import { Check, MessageCircle, Filter, Search, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchPackages, type Package } from '../api/packages';
+import { fetchPackages, fetchPackageTags, type Package, type PackageTag } from '../api/packages';
 
 interface CheckItemProps {
   text: string;
@@ -283,22 +283,73 @@ const StillDeciding = () => (
 // --- Main Component ---
 
 export default function Plans() {
+  const navigate = useNavigate();
   const [packages, setPackages] = useState<Package[]>([]);
+  const [allPackages, setAllPackages] = useState<Package[]>([]);
+  const [tags, setTags] = useState<PackageTag[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState<'name' | 'price' | 'created_at'>('name');
 
   useEffect(() => {
-    const loadPackages = async () => {
+    const loadData = async () => {
       try {
-        const data = await fetchPackages({ page_size: 10 });
-        setPackages(data.results);
+        const [packagesData, tagsData] = await Promise.all([
+          fetchPackages({ page_size: 50 }),
+          fetchPackageTags()
+        ]);
+        setAllPackages(packagesData.results);
+        setPackages(packagesData.results);
+        setTags(tagsData);
       } catch (error) {
-        console.error('Failed to load packages:', error);
+        console.error('Failed to load data:', error);
       } finally {
         setLoading(false);
       }
     };
-    loadPackages();
+    loadData();
   }, []);
+
+  // Filter and sort packages
+  useEffect(() => {
+    let filtered = [...allPackages];
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(pkg =>
+        pkg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        pkg.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        pkg.short_description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Tag filter
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter(pkg =>
+        selectedTags.some(tagId => pkg.tags.some(tag => tag.id === tagId))
+      );
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'price':
+          return parseFloat(a.price) - parseFloat(b.price);
+        case 'created_at':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        default:
+          return a.name.localeCompare(b.name);
+      }
+    });
+
+    setPackages(filtered);
+  }, [allPackages, searchTerm, selectedTags, sortBy]);
+
+  const handleViewDetails = (pkg: Package) => {
+    navigate(`/package/${pkg.slug}`);
+  };
 
   if (loading) {
     return (
@@ -315,6 +366,101 @@ export default function Plans() {
     <div className="font-sans min-h-screen bg-white">
       <PricingHeader />
 
+      {/* Filters Section */}
+      <div className="max-w-7xl mx-auto px-6 md:px-12 mb-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex flex-col lg:flex-row gap-4 items-center">
+            {/* Search */}
+            <div className="relative flex-1 min-w-0">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <input
+                type="text"
+                placeholder="Search packages..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007CA6] focus:border-transparent"
+              />
+            </div>
+
+            {/* Sort */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700">Sort by:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'name' | 'price' | 'created_at')}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#007CA6] focus:border-transparent"
+              >
+                <option value="name">Name</option>
+                <option value="price">Price</option>
+                <option value="created_at">Newest</option>
+              </select>
+            </div>
+
+            {/* Filter Toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
+                showFilters
+                  ? 'bg-[#007CA6] text-white border-[#007CA6]'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              <Filter size={16} />
+              Filters
+              {selectedTags.length > 0 && (
+                <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                  {selectedTags.length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Tag Filters */}
+          {showFilters && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="flex flex-wrap gap-2">
+                {tags.map(tag => (
+                  <button
+                    key={tag.id}
+                    onClick={() => {
+                      setSelectedTags(prev =>
+                        prev.includes(tag.id)
+                          ? prev.filter(id => id !== tag.id)
+                          : [...prev, tag.id]
+                      );
+                    }}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm transition-colors ${
+                      selectedTags.includes(tag.id)
+                        ? 'bg-[#007CA6] text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {tag.name}
+                    {selectedTags.includes(tag.id) && <X size={14} />}
+                  </button>
+                ))}
+              </div>
+              {selectedTags.length > 0 && (
+                <button
+                  onClick={() => setSelectedTags([])}
+                  className="mt-4 text-sm text-[#007CA6] hover:text-[#00688d] font-medium"
+                >
+                  Clear all filters
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Results Count */}
+      <div className="max-w-7xl mx-auto px-6 md:px-12 mb-4">
+        <p className="text-gray-600">
+          Showing {packages.length} package{packages.length !== 1 ? 's' : ''}
+          {searchTerm && ` for "${searchTerm}"`}
+        </p>
+      </div>
+
       {/* Pricing Cards Section */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 mb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -323,6 +469,7 @@ export default function Plans() {
               key={pkg.id}
               package={pkg}
               isPopular={pkg.is_featured && index < 3} // Make featured packages popular
+              onViewDetails={handleViewDetails}
             />
           ))}
         </div>

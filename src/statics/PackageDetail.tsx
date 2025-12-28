@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Clock, Tag, Star, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Check, Clock, Tag, Star } from 'lucide-react';
 import { fetchPackages, type Package } from '../api/packages';
 
 const PackageDetail = () => {
