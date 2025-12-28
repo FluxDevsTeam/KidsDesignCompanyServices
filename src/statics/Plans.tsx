@@ -302,17 +302,19 @@ export default function Plans() {
       <PricingHeader />
 
       {/* Pricing Cards Section */}
-      <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-        {packages.slice(0, 3).map((pkg, index) => (
-          <PricingCard
-            key={pkg.id}
-            package={pkg}
-            isPopular={index === 1} // Make the second one popular
-          />
-        ))}
+      <div className="max-w-7xl mx-auto px-6 md:px-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {packages.map((pkg, index) => (
+            <PricingCard
+              key={pkg.id}
+              package={pkg}
+              isPopular={pkg.is_featured && index < 3} // Make featured packages popular
+            />
+          ))}
+        </div>
       </div>
 
-      <PlansOverview />
+      <PlansOverview packages={packages} />
       <StillDeciding />
 
     </div>
