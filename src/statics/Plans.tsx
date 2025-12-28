@@ -1,5 +1,6 @@
 import { Check, MessageCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchPackages, type Package } from '../api/packages';
 
 interface CheckItemProps {
@@ -9,6 +10,7 @@ interface CheckItemProps {
 interface PricingCardProps {
   package: Package;
   isPopular: boolean;
+  onViewDetails: (pkg: Package) => void;
 }
 
 // --- Sub-Components ---
@@ -32,7 +34,7 @@ const CheckItem = ({ text }: CheckItemProps) => (
   </li>
 );
 
-const PricingCard = ({ package: pkg, isPopular }: PricingCardProps) => {
+const PricingCard = ({ package: pkg, isPopular, onViewDetails }: PricingCardProps) => {
   const features = pkg.includes ? pkg.includes.split('\n').filter(f => f.trim()) : [];
   const isPremium = pkg.is_featured;
   const buttonColor = isPremium ? 'orange' : 'blue';
@@ -65,13 +67,25 @@ const PricingCard = ({ package: pkg, isPopular }: PricingCardProps) => {
             <span className="text-sm text-gray-500 line-through ml-2">₦{pkg.undiscounted_price}</span>
           )}
         </div>
-        <button
-          className={`w-full py-3.5 rounded-full font-semibold text-white transition-transform hover:scale-[1.02] ${
-            buttonColor === 'orange' ? 'bg-[#FDB043] hover:bg-[#e59b32]' : 'bg-[#087CA7] hover:bg-[#066a8f]'
-          }`}
-        >
-          Book This Plan
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => onViewDetails(pkg)}
+            className={`flex-1 py-3.5 rounded-full font-semibold text-white transition-transform hover:scale-[1.02] ${
+              buttonColor === 'orange' ? 'bg-[#FDB043] hover:bg-[#e59b32]' : 'bg-[#087CA7] hover:bg-[#066a8f]'
+            }`}
+          >
+            View Details
+          </button>
+          <button
+            className={`px-4 py-3.5 rounded-full font-semibold border-2 transition-transform hover:scale-[1.02] ${
+              buttonColor === 'orange'
+                ? 'border-[#FDB043] text-[#FDB043] hover:bg-[#FDB043] hover:text-white'
+                : 'border-[#087CA7] text-[#087CA7] hover:bg-[#087CA7] hover:text-white'
+            }`}
+          >
+            Book Now
+          </button>
+        </div>
       </div>
     </div>
   );
