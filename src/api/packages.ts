@@ -43,7 +43,7 @@ export async function fetchPackages(params?: {
   tags?: number[];
 }): Promise<ApiResponse<Package>> {
   try {
-    let url = `${BASE_URL}/packages/package/`;
+    let url = `${BASE_URL}/packages/`;
 
     const queryParams = new URLSearchParams();
     if (params?.page) queryParams.append('page', params.page.toString());
@@ -72,7 +72,7 @@ export async function fetchPackages(params?: {
 // Fetch featured packages
 export async function fetchFeaturedPackages(): Promise<Package[]> {
   try {
-    const response = await fetch(`${BASE_URL}/packages/package/featured/`);
+    const response = await fetch(`${BASE_URL}/packages/featured/`);
     if (!response.ok) {
       await handleApiError(response, 'Failed to fetch featured packages');
     }
@@ -87,7 +87,7 @@ export async function fetchFeaturedPackages(): Promise<Package[]> {
 // Search packages
 export async function searchPackages(query: string): Promise<Package[]> {
   try {
-    const response = await fetch(`${BASE_URL}/packages/package/search/?search=${encodeURIComponent(query)}`);
+    const response = await fetch(`${BASE_URL}/packages/search/?search=${encodeURIComponent(query)}`);
     if (!response.ok) {
       await handleApiError(response, 'Failed to search packages');
     }
@@ -102,7 +102,7 @@ export async function searchPackages(query: string): Promise<Package[]> {
 // Fetch packages on sale
 export async function fetchPackagesOnSale(): Promise<Package[]> {
   try {
-    const response = await fetch(`${BASE_URL}/packages/package/on_sale/`);
+    const response = await fetch(`${BASE_URL}/packages/on_sale/`);
     if (!response.ok) {
       await handleApiError(response, 'Failed to fetch packages on sale');
     }
@@ -117,7 +117,7 @@ export async function fetchPackagesOnSale(): Promise<Package[]> {
 // Fetch package tags
 export async function fetchPackageTags(): Promise<PackageTag[]> {
   try {
-    const response = await fetch(`${BASE_URL}/packages/tag/`);
+    const response = await fetch(`${BASE_URL}/packages/tags/`);
     if (!response.ok) {
       await handleApiError(response, 'Failed to fetch package tags');
     }
