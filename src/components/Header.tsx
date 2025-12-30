@@ -21,7 +21,7 @@ const Header = ({ setIsMenuOpen, isMenuOpen }: { setIsMenuOpen: React.Dispatch<R
                     <Link to="/industries" className="text-2xl text-gray-800" onClick={() => setIsMenuOpen(false)}>Industries we work with</Link>
                     <Link to="/consultation" className="text-2xl text-gray-800" onClick={() => setIsMenuOpen(false)}>Consultation</Link>
                     <Link to="/blogs" className="text-2xl text-gray-800" onClick={() => setIsMenuOpen(false)}>Blogs</Link>
-                    <Link to="/plans" className="text-2xl text-gray-800" onClick={() => setIsMenuOpen(false)}>Pricing Plan</Link>
+                    <Link to="/plans" className="text-2xl text-gray-800" onClick={() => setIsMenuOpen(false)}>Packages</Link>
                 </nav>
                 <div className="mt-12">
                     <a href="#" className="bg-[#0093A7] text-white font-bold py-4 px-12 rounded-lg text-base inline-block">Shop Now</a>
@@ -51,7 +51,7 @@ const Header = ({ setIsMenuOpen, isMenuOpen }: { setIsMenuOpen: React.Dispatch<R
                         <Link to="/industries" className="text-gray-800 hover:text-[#0080A0] transition-colors">Industries we work with</Link>
                         <Link to="consultation" className="text-gray-800 hover:text-[#0080A0] transition-colors">Consultation</Link>
                         <Link to="blogs" className="text-gray-800 hover:text-[#0080A0] transition-colors">Blogs</Link>
-                        <Link to="plans" className="text-gray-800 hover:text-[#0080A0] transition-colors">Pricing Plan</Link>
+                        <Link to="plans" className="text-gray-800 hover:text-[#0080A0] transition-colors">Packages</Link>
                     </nav>
                     <a href="#" className="bg-[#0080A0] text-white font-bold py-2 px-7 rounded-lg text-sm hover:bg-[#006080] transition-colors">Shop Now</a>
                 </div>
