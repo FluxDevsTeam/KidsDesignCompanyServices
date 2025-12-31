@@ -4,7 +4,22 @@ import kdcLogo from '../assets/kdcLogo.png';
 
 const Header = ({ setIsMenuOpen, isMenuOpen }: { setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>, isMenuOpen: boolean }) => {
     const [isHovered, setIsHovered] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
     const navbarRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            if (currentScrollY > 50) {
+                setScrolled(true);
+            } else {
+                setScrolled(false);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
     const MobileMenu = () => (
         <div className="fixed inset-0 bg-white z-50 flex flex-col">
             <div className="bg-black text-white text-xs text-center py-3 px-4 relative">
@@ -38,7 +53,7 @@ const Header = ({ setIsMenuOpen, isMenuOpen }: { setIsMenuOpen: React.Dispatch<R
             <header
                 ref={navbarRef}
                 className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-                    isHovered
+                    scrolled || isHovered
                         ? 'bg-white shadow-lg backdrop-blur-md'
                         : 'bg-transparent'
                 }`}
