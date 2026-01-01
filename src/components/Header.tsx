@@ -66,7 +66,7 @@ const Header = ({ setIsMenuOpen, isMenuOpen }: { setIsMenuOpen: React.Dispatch<R
                 <div className="container mx-auto px-6 py-4 flex justify-between items-center">
                     <div className="flex items-center gap-4 md:gap-0">
                         <button className="md:hidden" onClick={() => setIsMenuOpen(true)}>
-                            <svg className={`w-6 h-6 transition-colors duration-300 ${isHovered ? 'text-gray-900' : 'text-white'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                            <svg className={`w-6 h-6 transition-colors duration-300 ${scrolled || isHovered ? 'text-gray-900' : 'text-white'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                         </button>
                         <div className="w-16">
                             <img src={kdcLogo} alt="Okids Design Company" />
@@ -82,7 +82,7 @@ const Header = ({ setIsMenuOpen, isMenuOpen }: { setIsMenuOpen: React.Dispatch<R
                         <Link to="plans" className="text-gray-800 hover:text-[#0080A0] transition-colors">Packages</Link>
                     </nav>
                     <a href="#" className={`font-bold py-2 px-7 rounded-lg text-sm transition-all duration-300 ${
-                        isHovered
+                        scrolled || isHovered
                             ? 'bg-[#0080A0] text-white hover:bg-[#006080]'
                             : 'bg-white text-[#0080A0] hover:bg-gray-100'
                     }`}>Shop Now</a>
