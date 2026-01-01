@@ -10,7 +10,7 @@ const StaticsLayout: React.FC = () => {
       <div className="min-h-screen flex flex-col">
     <Header setIsMenuOpen={setIsMenuOpen} isMenuOpen={isMenuOpen} />
   
-        <main className="">
+        <main className="pt-20 md:pt-24">
         {/* <div className='md:block hidden'>    <Breadcrumbs/> </div> */}
           <Outlet /> 
         </main>

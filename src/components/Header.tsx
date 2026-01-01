@@ -73,7 +73,7 @@ const Header = ({ setIsMenuOpen, isMenuOpen }: { setIsMenuOpen: React.Dispatch<R
                         </div>
                     </div>
                     <nav className={`hidden md:flex items-center gap-6 transition-colors duration-300 ${
-                        isHovered ? 'text-gray-900' : 'text-white'
+                        scrolled || isHovered ? 'text-gray-900' : 'text-white'
                     }`}>
                         <Link to="/" className="text-gray-800 hover:text-[#0080A0] transition-colors">Our Services</Link>
                         <Link to="/industries" className="text-gray-800 hover:text-[#0080A0] transition-colors">Industries we work with</Link>
