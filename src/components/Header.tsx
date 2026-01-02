@@ -23,9 +23,9 @@ const Header = ({ setIsMenuOpen, isMenuOpen }: { setIsMenuOpen: React.Dispatch<R
     const MobileMenu = () => (
         <div className="fixed inset-0 bg-white z-50 flex flex-col">
             <div className="bg-black text-white text-xs text-center py-3 px-4 relative">
-                {/* <span>
+                <span>
                     Sign up and get 20% off to your first order. <a href="#" className="underline font-semibold">Sign Up Now</a>
-                </span> */}
+                </span>
             </div>
             <div className="p-6 flex flex-col flex-grow">
                 <button onClick={() => setIsMenuOpen(false)} className="self-start mb-8">
